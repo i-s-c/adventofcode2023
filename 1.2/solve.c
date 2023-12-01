@@ -37,7 +37,7 @@ int findlast( const char *s )
 	l = strlen(s);
 
 	if ( l ) {
-		for ( p = s + l - 1; *p != '\0'; p-- ) {
+		for ( p = s + l - 1; p >= s; p-- ) {
 			for ( i = 0; i < 18; i++ ) {
 				len = strlen( lexicon[i]);
 
