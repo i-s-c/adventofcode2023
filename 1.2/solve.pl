@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# This gets the right answer for the example (281). But fails for the real data set. Which was annoying.
+
 use strict; 
 
 my $sum = 0;
@@ -40,15 +42,15 @@ while ( my $line = <STDIN> ) {
 	}
 
 
-	print "$digits\t$f$l + $sum = \t";
+	print "$digits\t$f$l\n";
 
 	$sum += "$f$l";
 
-	print "$sum\n";
+	#print "$sum\n";
 
 }
 
-#print "$sum\n";
+print "$sum\n";
 
 exit 0;
 
