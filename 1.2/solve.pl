@@ -17,16 +17,13 @@ while ( my $line = <STDIN> ) {
 
 	print "$line\t";
 
-	#foreach my $n ( keys %numbers ) {
-	#	$line =~ s/$n/$numbers{$n}/ig;
-	#}
 	while ( ( my $m = get_bestmatch( $line ) ) > 0 ) {
-		print "\tswapping $digits{$m} for $m\n";
+		#print "\tswapping $digits{$m} for $m\n";
 		$line =~ s/$digits{$m}/$m/;
-		print "\t$line\n";
+		#print "\t$line\n";
 	}
 
-	print "$line\n";
+	print "$line\t";
 
 	my $digits = $line;
 	$digits =~ tr/0-9//cd;
@@ -39,7 +36,7 @@ while ( my $line = <STDIN> ) {
 
 	if ( !defined($l) ) {
 		$l = $f;
-		print "SINGLE\t";
+		#print "SINGLE\t";
 	}
 
 
@@ -51,7 +48,7 @@ while ( my $line = <STDIN> ) {
 
 }
 
-print "$sum\n";
+#print "$sum\n";
 
 exit 0;
 
@@ -63,27 +60,32 @@ sub get_bestmatch {
 
 	foreach my $k ( sort keys %numbers ) {
 		if ( $s =~ /$k/ ) {
-			print "Matches $k\n";
 			my $t = $s;
 			$t =~ s/$k.*$//;
-			my $l = length($t );
+			my $len = length($t);
 
-			$bestmatch[ $numbers{$k}] = $l;
+			$bestmatch[ $numbers{$k}] = $len;
 		}
 	}
 
-	print "Matching $s\n";
-
-	my $bm = 10;
+	my $bm = 1000000;
 	my $bi = 0;
+	my $count  = 0;
 	for( my $i = 1; $i < 10; $i++ ) {
 		if( defined( $bestmatch[$i] ) ) {
-			print "\t$bestmatch[$i]\n";
 			if ( $bestmatch[$i] < $bm ) {
 				$bm = $bestmatch[$i];
 				$bi = $i;
+				$count++;
 			}
 		}
+	}
+
+	if ( $count ) {
+		print "*";
+	}
+	else {
+		print " ";
 	}
 	return $bi;
 }
