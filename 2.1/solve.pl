@@ -8,6 +8,10 @@ my %gameset;
 
 my $gr = \%gameset;
 
+my %max = ( "red" => 12, "green" => 13, "blue" => 14 );
+
+print $max{"red"} . "\n";
+
 while ( my $line = <STDIN> ) {
 	chomp( $line );
 
@@ -29,19 +33,29 @@ while ( my $line = <STDIN> ) {
 
 			my ( $count, $colour ) = split(/ /, $ball );
 
+		
+			if ( $count > $max{$colour} ) {
+				print "$colour $count $max{$colour}\n";
+				$gr->{$id}->{"impossible"} = 1;
+			}
 			$gr->{ $id }->{$colour} += $count;
-
 		}
 
 	}
 }
 
-foreach my $g ( sort keys %gameset ) {
+foreach my $g ( sort { $a <=> $b } keys %gameset ) {
 	my $r = $gameset{$g};
 
-	if ( $r->{"red"} <= 12 && $r->{"green"} <= 13 && $r->{"blue"} <= 14 ) {
+	unless ( $r->{"impossible"} == 1 ) {
 		$sum += $g;
 	}
+
+	my @a;
+	foreach my $b ( sort keys %$r ) {
+		@a = ( @a, "$b: $gameset{$g}->{$b}" );
+	}
+	print "$g: " . join( ", ", @a ) . "\n";
 }
 
 print "$sum\n";
