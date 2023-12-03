@@ -7,7 +7,6 @@ use strict;
 my $sum = 0;
 my @a;
 my %stars = ();
-my %numbers = ();
 
 my %results;
 my $r = \%results;
@@ -67,7 +66,7 @@ for ( $i = 0; $i < $max_i; $i++ ) {
 	if ( $in_num ) {
 		my $adjacent = shift ( @num_str );
 		my $n = join("",@num_str);
-		print "X $adjacent\t$n\n";
+		print "$adjacent\t$n\n";
 		$r->{$adjacent}->{$n} = $adjacent;
 
 	}
@@ -76,10 +75,10 @@ for ( $i = 0; $i < $max_i; $i++ ) {
 print "Results\n";
 foreach my $id ( sort keys %stars ) {
 	my $ratio = 1;
-	my $i = -1;
+	my $i = -1;  # hack which only works if there are exactly two numbers in a ratio, and one if there aren't.
 
 	foreach my $n ( sort keys %$r->{$id} ) {
-		print "\t$id\t$n\n";
+		#print "\t$id\t$n\n";
 
 		$ratio = $ratio * $n;
 		$i++;
