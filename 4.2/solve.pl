@@ -6,8 +6,6 @@ my $sum = 0;
 
 my %deck;
 my $d = \%deck;
-my $max_id = 0;
-
 while ( my $line = <STDIN> ) {
 	chomp($line);
 
@@ -16,10 +14,6 @@ while ( my $line = <STDIN> ) {
 
 	my $id = $name;
 	$id =~ tr/0-9//cd;
-
-	if ( $id > $max_id ) {
-		$max_id = $id;
-	}
 
 	$rest =~ s/^ //;
 	
@@ -43,7 +37,6 @@ while ( my $line = <STDIN> ) {
 	my $wins = 0;
 	foreach my $n ( @numbers ) {
 		if( defined($win{$n}) ) {
-			print "$name has winning number $n\n";
 			$wins++;
 		}
 	}
@@ -52,27 +45,22 @@ while ( my $line = <STDIN> ) {
 	$d->{$id}->{wins}=$wins;
 
 	
-#	my $score = 0;
-#	if ( $count > 0 ) {
-#		$score = 2 ** ( $count - 1 );
-#	}
-
-#	print "$name $count $score\n";
-#	$sum += $score;
 }
-
-print "$max_id\n";
 
 foreach my $i ( sort { $a <=> $b } keys %$d ) {
 
-	for ( my $j = $i + 1; $j <= $i + $d->{$i}->{wins}; $j++ ) {
-		$d->{$j}->{count} += 1;
+	print "Processing card $i which has a count of $d->{$i}->{count} and $d->{$i}->{wins} wins\n";
+	for ( my $c = 0; $c < $d->{$i}->{count}; $c++ ) {
+		for ( my $j = $i + 1; $j <= $i + $d->{$i}->{wins}; $j++ ) {
+			$d->{$j}->{count} += 1;
+			print "\tDuplicating card $j so there are now $d->{$j}->{count} of them with $d->{$j}->{wins}\n";
+		}
 	}
 }
 
 
 foreach my $i ( sort { $a <=> $b } keys %$d ) {
-	print "Card $i has $d->{$i}->{count}\n";
+	print "Card $i has a total of $d->{$i}->{count}\n";
 	$sum += $d->{$i}->{count};
 }
 
