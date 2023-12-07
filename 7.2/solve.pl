@@ -78,26 +78,33 @@ foreach my $hand ( sort keys %$hands ) {
 
 		print "\tbest pairs are: " . join(", ", @bestpair ) . "\n";
 
-		my $bp = ( sort { $b <=> $a } @bestpair )[0];
+		for ( my $i = 0; $i < scalar(@bestpair); $i++ ) {
+			my $bp = ( sort { $b <=> $a } @bestpair )[$i];
 
-		print "\tthe best pair is $bp\n";
+			print "\tthe best pair is $bp\n";
 
-		my ( $bpp, $bpv ) = split(/\./,$bp );
+			my ( $bpp, $bpv ) = split(/\./,$bp );
 
-		$bp = int($bpv);
-		print "\tThe card has a value of $bp\n";
+			$bp = int($bpv);
+			print "\tThe card has a value of $bp\n";
 
-		my $wildcard = $valuecards{$bp};
+			my $wildcard = $valuecards{$bp};
 
-		if ( $wildcard ne "J" ) {
-			printf("\tthe card is %s, using the %d jokers to make %d of %s\n", $wildcard, $jokers,  $pairs{$wildcard} + $jokers, $wildcard);
+			
 
-			$pairs{$wildcard} += $jokers;
-			delete $pairs{"J"};
+			if ( $wildcard ne "J" ) {
+				printf("\tthe card is %s, using the %d jokers to make %d of %s\n", $wildcard, $jokers,  $pairs{$wildcard} + $jokers, $wildcard);
+
+				$pairs{$wildcard} += $jokers;
+				delete $pairs{"J"};
+				goto OUT;
+			}
+			else {
+				print "\tDon't need to make a joker a joker!\n";
+				print "\tTrying again\n";
+			}
 		}
-		else {
-			print "\tDon't need to make a joker a joker!\n";
-		}
+OUT:
 	}
 	
 	my $pairscore = 0;
