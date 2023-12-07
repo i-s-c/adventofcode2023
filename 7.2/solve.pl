@@ -29,7 +29,7 @@ while ( my $line = <STDIN> ) {
 
 # Sort/Score the hands
 
-foreach my $hand ( keys %$hands ) {
+foreach my $hand ( sort keys %$hands ) {
 
 	print "Hand: $hand\n";
 	my @cards = split(//,$hand);
@@ -100,7 +100,7 @@ foreach my $hand ( keys %$hands ) {
 	my $pairscore = 0;
 	
 	my $wildcardhand = "";
-	foreach my $card ( keys %pairs ) {
+	foreach my $card ( sort keys %pairs ) {
 		$pairscore += 6 ** ($pairs{$card}-1);
 
 		print "\t\tWe have $pairs{$card} of $card\n";
@@ -110,7 +110,7 @@ foreach my $hand ( keys %$hands ) {
 		}
 	} 
 
-	print "\thand has pairvalue $pairscore, with wildcards it looks like $wildcardhand instead of $hand\n";
+	print "\thand is $description{$pairscore} (a pairvalue of $pairscore), with wildcards it looks like $wildcardhand instead of $hand\n";
 
 	$hands->{$hand}->{pairvalue} = $pairscore;
 	$hands->{$hand}->{wildcardhand} = $wildcardhand;
