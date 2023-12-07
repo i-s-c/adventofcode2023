@@ -5,87 +5,66 @@ use warnings;
 
 
 
-my %hands;
+my $hands;
+my %values;
+
+my %cardvalues = ( "1" => 0, "2" => 1, "3" => 2, "4" => 3, "5" => 4, "6" => 5, "7" => 6, "8" => 7, "9" => 8, "T" => 9, "J" => 10, "Q" => 11, "K" => 12, "A" => 13 );
 
 while ( my $line = <STDIN> ) {
 	chomp($line);
 	my ( $hand, $bid ) = split( / /, $line );
 
-	# Swap J,Q,K,A to A,B,C,D for easier sorting
-
-	$hand =~ tr/TJQKA/BCDEF/;
-
-	$hands{$hand} = $bid;
+	$hands->{$hand}->{bid} = $bid;
 }
 
 # Sort/Score the hands
 
-my %sorted_hands;
-foreach my $hand ( keys %hands ) {
+foreach my $hand ( keys %$hands ) {
+
+	print "Hand: $hand\n";
 	my @cards = split(//,$hand);
 
 	my %pairs;
-	my %revpairs;
-	my @sorted_cards;
-	my $pair_card = "";
-	my $pair_count = 0;
-	foreach my $card ( sort @cards ) {
-		$pairs{$card} += 2;
-		if ( $pairs{$card} > $pair_count ) {
-			$pair_count = $pairs{$card};
-		}
-		@sorted_cards = ( $card, @sorted_cards );
+	foreach my $card ( @cards ) {
+		$pairs{$card} += 1;
 	}
 
-	my $two = 0;
-	my $last_two_card = "";
-	foreach my $fudge ( @sorted_cards ) {
-		#print "FUDGE: $fudge $pairs{$fudge} ";
-		if ( $pairs{$fudge} == 4 ) {
-			if ( $last_two_card ne $fudge ) {
-				$two++;
-				if ( $two == 2 ) {
-					$pairs{$fudge}--;
-				}
-				$last_two_card = $fudge;
-			}
-			if ( $two == 2 ) {
-				$pairs{$fudge}--;
-			}
-		}
-		#print "$two\n";
-		
-	}
-	
-	my @s;
-	foreach my $card ( @sorted_cards ) {
-		# Gasp! We can have five of a kind! 
-		my $fudge = 10 - $pairs{$card};
-		if ( $fudge == 0 ) {
-			$fudge = "A";
-		}
-		$card = sprintf( "%s_%s", $fudge, $card );
-		@s = ( $card, @s );
-	}
+	my $handvalue = 0;
+	foreach my $card ( @cards ) {
 
-	@sorted_cards = sort( @s );
-	
-	my $sorted_hand = sprintf( "%s:%s:", $pair_count == 10 ? "A" : $pair_count,  join(",", @sorted_cards )  );
-	$sorted_hands{$sorted_hand} = $hands{$hand};
+		my $hv = $cardvalues{$card} * 14 ** ( $pairs{$card} - 1 );
+		printf("\t%s: %d * 14^%d\n", $card, $cardvalues{$card}, $pairs{$card} - 1 );
+		$handvalue += $hv;
 
-	#print "Endofhand\n";
-	
+		#if ( $pairs{$card} > 1 ) 0i{
+		#	$handvalue += $pairs{$card} * 5 * 14;
+#
+#			$handvalue += ( $
+#			print "\t$card: $pairs{$card} * 5 * 14 = " . $pairs{$card} * 14 . "\n";
+#		}
+#		else {
+#			$handvalue += $cardvalues{$card};
+#			print "\t$card: $pairs{$card} =  $cardvalues{$card}\n";
+#		}
+	}
+	print "\thand value is $handvalue\n";
+	$hands->{$hand}->{value} = $handvalue;
+
+	if ( !defined( $values{$handvalue} )) {
+		$values{$handvalue} = $hand;
+	}
+	else {
+		print "Duplicate value for $hand\n";
+		exit 0;
+	}
 }
 
 my $rank = 1;
 my $sum = 0;
-foreach my $key ( sort keys %sorted_hands ) {
-	my ( $paircount, $hand, $paircard ) = split( /\:/, $key );
-	$hand =~ s/[0123456789A]_//g;
-	$hand =~ s/X/${paircard}/g;
-	$hand =~ tr/BCDFE/TJQKA/;
-	printf( "%d, %s %d = %d\t%s\n", $rank, $hand, $sorted_hands{$key}, $sorted_hands{$key} * $rank, $key);
-	$sum += $sorted_hands{$key} * $rank;
+foreach my $value (sort { $a <=> $b } keys %values ) {
+	my $score = $rank * $hands->{$values{$value}}->{bid};
+	printf( "%d, %d, %s = %d\n", $rank, $value, $values{$value}, $score );
+	$sum += $score;
 	$rank++;
 }
 
