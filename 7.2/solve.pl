@@ -24,6 +24,9 @@ while ( my $line = <STDIN> ) {
 	chomp($line);
 	my ( $hand, $bid ) = split( / /, $line );
 
+	#if ( $hand eq "JJJJJ" ) {
+	#	$hand = "AAAAA";
+	#}
 	$hands->{$hand}->{bid} = $bid;
 }
 
