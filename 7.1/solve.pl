@@ -59,13 +59,18 @@ foreach my $hand ( keys %hands ) {
 	
 	my @s;
 	foreach my $card ( @sorted_cards ) {
-		$card = sprintf( "%d_%s", 10 - $pairs{$card}, $card );
+		# Gasp! We can have five of a kind! 
+		my $fudge = 10 - $pairs{$card};
+		if ( $fudge == 0 ) {
+			$fudge = "A";
+		}
+		$card = sprintf( "%s_%s", $fudge, $card );
 		@s = ( $card, @s );
 	}
 
 	@sorted_cards = sort( @s );
 	
-	my $sorted_hand = "$pair_count:" . join(",", @sorted_cards ) . ":$pair_card";
+	my $sorted_hand = sprintf( "%s:%s:", $pair_count == 10 ? "A" : $pair_count,  join(",", @sorted_cards )  );
 	$sorted_hands{$sorted_hand} = $hands{$hand};
 
 	#print "Endofhand\n";
@@ -76,7 +81,7 @@ my $rank = 1;
 my $sum = 0;
 foreach my $key ( sort keys %sorted_hands ) {
 	my ( $paircount, $hand, $paircard ) = split( /\:/, $key );
-	$hand =~ s/[012345678]_//g;
+	$hand =~ s/[0123456789A]_//g;
 	$hand =~ s/X/${paircard}/g;
 	$hand =~ tr/BCDFE/TJQKA/;
 	printf( "%d, %s %d = %d\t%s\n", $rank, $hand, $sorted_hands{$key}, $sorted_hands{$key} * $rank, $key);
