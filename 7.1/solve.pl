@@ -47,12 +47,20 @@ foreach my $hand ( keys %$hands ) {
 		$i--;
 	}
 	
+	$hands->{$hand}->{ordered} = join("",@orderedhand);
+	print "$hand order is $hands->{$hand}->{ordered}\n";
+
 	print "\thand value is $handvalue\n";
 	$hands->{$hand}->{ordervalue} = $handvalue;
 
-	$hands->{$hand}->{ordered} = join("",@orderedhand);
+	# Hang on, we score them in the order they have been played in!
 
-	print "$hand order is " . join("",@orderedhand) . "\n";
+	$i = 5;
+	$handvalue = "";
+	foreach my $card ( @cards ) {
+		$handvalue .= sprintf( "%02d", $cardvalues{$card} );
+		$i--;
+	}
 
 	# Now work out the pair score
 	my $pairscore = 0;
@@ -65,7 +73,8 @@ foreach my $hand ( keys %$hands ) {
 
 	$hands->{$hand}->{pairvalue} = $pairscore;
 
-	$handvalue =  $handvalue  + ( $pairscore * ( 14 ** 6 ) );
+	#$handvalue =  $handvalue  + ( $pairscore * ( 14 ** 6 ) );
+	$handvalue = sprintf( "%04d%s", $pairscore, $handvalue );
 
 	print "\ttotal value is $handvalue\n";
 
@@ -82,11 +91,11 @@ foreach my $hand ( keys %$hands ) {
 
 my $rank = 1;
 my $sum = 0;
-printf( "rank\tordered\tpairscore\thandscore\tvalue\thand\ttank\tbid\tscore\n");
+printf( "rank\tpairscore\tvalue\thand\ttank\tbid\tscore\n");
 foreach my $value (sort { $a <=> $b } keys %values ) {
 	my $hand = $values{$value};
 	my $score = $rank * $hands->{$hand}->{bid};
-	printf( "%d\t%s\t%d\t%d\t%d\t%s\t%d\t%d\t%d\n", $rank, $hands->{$hand}->{ordered}, $hands->{$hand}->{pairvalue}, $hands->{$hand}->{ordervalue}, $value, $hand, $rank, $hands->{$hand}->{bid}, $score );
+	printf( "%d\t%d\t%s\t%s\t%d\t%d\t%d\n", $rank, $hands->{$hand}->{pairvalue}, $value, $hand, $rank, $hands->{$hand}->{bid}, $score );
 	$sum += $score;
 	$rank++;
 }
