@@ -25,29 +25,34 @@ foreach my $hand ( keys %$hands ) {
 	my @cards = split(//,$hand);
 
 	my %pairs;
+	my @cv;
 	foreach my $card ( @cards ) {
 		$pairs{$card} += 1;
+		@cv = ( @cv, $cardvalues{$card} );
 	}
 
 	my $handvalue = 0;
-	foreach my $card ( @cards ) {
-
-		my $hv = $cardvalues{$card} * 14 ** ( $pairs{$card} - 1 );
-		printf("\t%s: %d * 14^%d\n", $card, $cardvalues{$card}, $pairs{$card} - 1 );
-		$handvalue += $hv;
-
-		#if ( $pairs{$card} > 1 ) 0i{
-		#	$handvalue += $pairs{$card} * 5 * 14;
-#
-#			$handvalue += ( $
-#			print "\t$card: $pairs{$card} * 5 * 14 = " . $pairs{$card} * 14 . "\n";
-#		}
-#		else {
-#			$handvalue += $cardvalues{$card};
-#			print "\t$card: $pairs{$card} =  $cardvalues{$card}\n";
-#		}
+	my $i = 5;
+	foreach my $v ( sort { $b <=> $a } @cv) {
+		$handvalue += $v * ( $i ** 14 );
+		$i--;
 	}
+	
 	print "\thand value is $handvalue\n";
+
+	# Now work out the pair score
+	my $pairscore = 0;
+
+	foreach my $card ( keys %pairs ) {
+		$pairscore += 6 ** ( $pairs{$card} );
+	} 
+
+	print "\thand has pairvalue $pairscore\n";
+
+	$handvalue =  $handvalue  + ( $pairscore * ( 6 ** 14 ) );
+
+	print "\ttotal value is $handvalue\n";
+
 	$hands->{$hand}->{value} = $handvalue;
 
 	if ( !defined( $values{$handvalue} )) {
