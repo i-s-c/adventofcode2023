@@ -82,10 +82,11 @@ foreach my $hand ( keys %$hands ) {
 
 my $rank = 1;
 my $sum = 0;
+printf( "rank\tordered\tpairscore\thandscore\tvalue\thand\ttank\tbid\tscore\n");
 foreach my $value (sort { $a <=> $b } keys %values ) {
-	my $score = $rank * $hands->{$values{$value}}->{bid};
 	my $hand = $values{$value};
-	printf( "%d: %s, %d, %d, %d, %s: %d * %d  = %d\n", $rank, $hands->{$hand}->{ordered}, $hands->{$hand}->{pairvalue}, $hands->{$hand}->{ordervalue}, $value, $hand, $rank, $hands->{$hand}->{bid}, $score );
+	my $score = $rank * $hands->{$hand}->{bid};
+	printf( "%d\t%s\t%d\t%d\t%d\t%s\t%d\t%d\t%d\n", $rank, $hands->{$hand}->{ordered}, $hands->{$hand}->{pairvalue}, $hands->{$hand}->{ordervalue}, $value, $hand, $rank, $hands->{$hand}->{bid}, $score );
 	$sum += $score;
 	$rank++;
 }
