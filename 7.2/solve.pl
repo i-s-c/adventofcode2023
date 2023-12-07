@@ -10,7 +10,7 @@ $| = 1;
 my $hands;
 my %values;
 
-my %cardvalues = ( "1" => 1, "2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7, "8" => 8, "9" => 9, "T" => 10, "J" => 0, "Q" => 11, "K" => 12, "A" => 13 );
+my %cardvalues = ( "2" => 1, "3" => 2, "4" => 3, "5" => 4, "6" => 5, "7" => 6, "8" => 7, "9" => 8, "T" => 9, "J" => 0, "Q" => 10, "K" => 11, "A" => 12 );
 
 my %valuecards;
 
@@ -118,7 +118,6 @@ foreach my $hand ( sort keys %$hands ) {
 	$hands->{$hand}->{pairvalue} = $pairscore;
 	$hands->{$hand}->{wildcardhand} = $wildcardhand;
 
-	#$handvalue =  $handvalue  + ( $pairscore * ( 14 ** 6 ) );
 	$handvalue = sprintf( "%04d%s", $pairscore, $handvalue );
 
 	print "\ttotal value is $handvalue\n";
