@@ -3,6 +3,14 @@
 use strict;
 use warnings;
 
+# Looking for ways to optimise. Had the feeling that knowing how often things loop round back to the beginning would be important.
+# Work out these cycles, and then see when the co-incide.
+# So if one takes 3 steps to get to the solution, and another take 4, then they'll both arrive at the answer in 12.  So a basic product 
+# of the things.  However, I could be bothered to work out what the cycles were. So did some empirical tests - running the brute force 
+# version with just the first 2 then 3 nodes.  Which produced a total
+# Then running this - counting the steps and the number of times it cycled through the complete list of instructions.
+# I just observed that it was   Stepcount of 1 times the cycle count of all the others.
+
 $| = 1;
 
 my $m;
