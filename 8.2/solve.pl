@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+$| = 1;
 
 my $m;
 
@@ -18,12 +19,8 @@ while ( my $line = <STDIN> ) {
 			my $left = $2;
 			my $right = $3;
 
-			print "$node $left $right\n";
 			$m->{$node}->{L} = $left;
 			$m->{$node}->{R} = $right;
-		}
-		else {
-			print "$line\n" 
 		}
 	}
 }
@@ -34,40 +31,38 @@ while ( my $line = <STDIN> ) {
 
 my @nodes;
 foreach my $node ( keys %$m ) {
-	print "$node\n";
 	if ( $node =~ /A$/ ) {
+		print "Start at $node\n";
 		@nodes = ( @nodes, $node );
 	}
 }
+
+#@nodes = ( "AAA" );
 
 printf( "There are %d starting nodes\n", scalar(@nodes) );
 
 my $stepcount = 0;
 
-my $allz = 1;
-foreach my $n ( @nodes ) {
-	unless ( $n =~ /Z$/ ) {
-		$allz = 0;
-	}
-}
+my $allz = 0;
 
-while ( $allz == 0 ) {
+while ( $allz < scalar(@nodes) ) {
 	foreach my $step ( @steps ) {
 		$stepcount++;
 
-		$allz = 1;
+		$allz = 0;
 		for ( my $i = 0; $i < scalar(@nodes); $i++ ) {
-			my $node = $nodes[$i];
 
 			$nodes[$i] = $m->{$nodes[$i]}->{$step};
 
-			unless ( $nodes[$i] =~ /Z$/ ) {	
-				$allz = 0;
+			if ( $nodes[$i] =~ /Z$/ ) {	
+				$allz++;
+				print "Found $stepcount $i $allz $nodes[$i]\n";
 			}
 		}
-		if ( $allz ) {
+		if ( $allz >= scalar(@nodes)) {
 			goto OUT;
 		}
+		# print "$allz $stepcount\n";
 		
 	}
 }
@@ -75,6 +70,6 @@ while ( $allz == 0 ) {
 OUT:
 
 
-print "Answer: $stepcount\n";
+print "Answer: $allz $stepcount\n";
 
 exit 0;
