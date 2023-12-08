@@ -30,7 +30,7 @@ while ( my $line = <STDIN> ) {
 # Get starting nodes
 
 my @nodes;
-foreach my $node ( keys %$m ) {
+foreach my $node ( sort keys %$m ) {
 	if ( $node =~ /A$/ ) {
 		print "Start at $node\n";
 		@nodes = ( @nodes, $node );
@@ -45,12 +45,15 @@ my $stepcount = 0;
 
 my $allz = 0;
 
+my $nodenum = scalar(@nodes);
+$nodenum = 3;
+
 while ( $allz < scalar(@nodes) ) {
 	foreach my $step ( @steps ) {
 		$stepcount++;
 
 		$allz = 0;
-		for ( my $i = 0; $i < scalar(@nodes); $i++ ) {
+		for ( my $i = 0; $i < $nodenum; $i++ ) {
 
 			$nodes[$i] = $m->{$nodes[$i]}->{$step};
 
@@ -59,7 +62,7 @@ while ( $allz < scalar(@nodes) ) {
 				print "Found $stepcount $i $allz $nodes[$i]\n";
 			}
 		}
-		if ( $allz >= scalar(@nodes)) {
+		if ( $allz >= $nodenum) {
 			goto OUT;
 		}
 		# print "$allz $stepcount\n";

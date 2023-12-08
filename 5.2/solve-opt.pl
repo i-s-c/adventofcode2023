@@ -5,17 +5,8 @@ use warnings;
 
 $| = 1;
 
-my %seed_to_soil_map;
-my %soil_to_fertilizer_map;
-my %fertilizer_to_water_map;
-my %water_to_light_map;
-my %light_to_temperature_map;
-my %temperature_to_humidity_map;
-my %humidity_to_location_map;
-
 my @seeds;
 
-my $m;
 my $key;
 my $rm;
 my @key_list;
@@ -35,31 +26,24 @@ while ( my $line = <STDIN> ) {
 			@seeds = split(/ /,$s);
 		}
 		elsif ( $line =~ /^seed-to-soil map:/ ) {
-			$m = \%seed_to_soil_map;
 			$key = "seed_to_soil";
 		}
 		elsif ( $line =~ /^soil-to-fertilizer map:/ ) {
-			$m = \%soil_to_fertilizer_map;
 			$key = "soil_to_fertilizer";
 		}
 		elsif ( $line =~ /^fertilizer-to-water map:/ ) {
-			$m = \%fertilizer_to_water_map;
 			$key = "fertilizer_to_water";
 		}
 		elsif ( $line =~ /^water-to-light map:/ ) {
-			$m = \%water_to_light_map;
 			$key = "water_to_light";
 		}
 		elsif ( $line =~ /^light-to-temperature map:/ ) {
-			$m = \%light_to_temperature_map;
 			$key = "light_to_temperature";
 		}
 		elsif ( $line =~ /^temperature-to-humidity map:/ ) {
-			$m = \%temperature_to_humidity_map;
 			$key = "temperature_to_humidity";
 		}
 		elsif ( $line =~ /^humidity-to-location map:/ ) {
-			$m = \%humidity_to_location_map;
 			$key = "humidity_to_location";
 		}
 		else {
@@ -78,19 +62,15 @@ while ( my $line = <STDIN> ) {
 		# Assume that the data is right. Saves time.
 		my ( $dest, $source, $range ) = split(/ /, $line );
 
-		$m->{$source}->{source} = $source;
-		$m->{$source}->{dest} = $dest;
-		$m->{$source}->{range} = $range;
-
 		$rm->{$key}->{for}->{$source}->{source} = $source;
 		$rm->{$key}->{for}->{$source}->{dest} = $dest;
 		$rm->{$key}->{for}->{$source}->{range} = $range;
 
 		my $rdest = $dest + $range - 1;
 		my $rsource = $source + $range - 1;
-		$rm->{$key}->{rev}->{$rdest}->{source} = $rsource;
-		$rm->{$key}->{rev}->{$rdest}->{dest} = $rdest;
-		$rm->{$key}->{rev}->{$rdest}->{range} = $range;
+		$rm->{$key}->{rev}->{$dest}->{source} = $dest;
+		$rm->{$key}->{rev}->{$dest}->{dest} = $source;
+		$rm->{$key}->{rev}->{$dest}->{range} = $range;
 	}
 }
 
@@ -110,6 +90,19 @@ while ( my $is = shift ( @seeds ) ) {
 }
 
 my @quick_seeds;
+
+#resolve_seed_matrix( $seed_matrix );
+
+foreach my $key ( keys %$rm ) {
+	print "$key:\n";
+
+	foreach my $s ( sort { $a <=> $b } keys %{$rm->{$key}->{rev}} ) {
+		printf( "%d %d %d\n", $rm->{$key}->{rev}->{$s}->{dest}, $rm->{$key}->{rev}->{$s}->{source}, $rm->{$key}->{rev}->{$s}->{range} );
+		
+	}
+}
+
+exit 0;
 
 foreach my $is ( sort { $a <=> $b } keys %$seed_matrix ) {
 	my $r = $seed_matrix->{$is};
@@ -185,7 +178,8 @@ sub get_highest_map {
 		$best_match = $map->{$dest}->{source};
 	}
 	#print "Not in range\n";
-	return $best_match;
+	return $i;
+	#return $best_match;
 }
 
 sub get_last_in_range {
@@ -198,4 +192,100 @@ sub get_last_in_range {
 		}
 	}
 	return $i;
+}
+
+sub resolve_seed_matrix {
+	my ( $sm ) = @_;
+
+	my @key_copy = @key_list;
+
+	find_range_for_map( \@key_copy, $sm );
+		
+}
+
+sub find_range_for_map {
+	my ( $keys, $sm ) = @_;
+
+	my $new_sm;
+
+	my $key = shift @$keys;
+
+
+	if ( !defined($key) ) {
+		return;
+	}
+
+	print "$key\n";
+
+	my $map = $rm->{$key}->{for};
+
+	
+	foreach my $s ( sort { $a <=> $b } keys %$sm ) {
+		my $low = $s;
+		my $high = $low + $sm->{$s} - 1;
+
+		print "\tINPUT($low,$high)\n";
+
+		foreach my $r ( sort { $a <=> $b } keys %$map ) {
+			my $start = $map->{$r}->{source};
+			my $end = $start + $map->{$r}->{range} - 1;
+			my $offset = $start - $map->{$r}->{dest};
+			print "\t\tOUTPUT($start, $end)  $map->{$r}->{range} $map->{$r}->{dest}\n";
+
+			my @coords;
+			if ( $low < $start ) {
+				if ( $high < $start ) {
+					@coords = ( @coords, [ $low, $high ] );
+					@coords = ( @coords, [ $start, $end ] );
+				}
+				elsif ( $high > $end ) {
+					@coords = ( @coords, [ $low, $start - 1 ] );
+					@coords = ( @coords, [ $start, $end ] );
+					@coords = ( @coords, [ $end + 1, $high ] );
+				}
+				else {
+					@coords = ( @coords, [ $low, $start - 1 ] );
+					@coords = ( @coords, [ $start, $high ] );
+					@coords = ( @coords, [ $high + 1, $end ] );
+				}
+			}
+			elsif ( $low > $end ) {
+				@coords = ( @coords, [ $start, $end ] );
+				@coords = ( @coords, [ $low, $high ] );
+			}
+			else { # low is within start and end 
+				if ( $high > $end ) {
+					@coords = ( @coords, [ $start, $low - 1 ] );
+					@coords = ( @coords, [ $low, $end ] );
+					@coords = ( @coords, [ $end + 1, $high ] );
+				}
+				else {
+					@coords = ( @coords, [ $start, $low - 1 ] );
+					@coords = ( @coords, [ $low, $high ] );
+					@coords = ( @coords, [ $high + 1, $end ] );
+				}
+			}
+
+			foreach my $a ( @coords ) {
+
+				my $new_source = $a->[0];
+				my $new_range = $a->[1] - $a->[0] + 1;
+				my $new_dest = $a->[0] - $offset;
+				print "\t\t$a->[0], $a->[1] $new_range $new_dest\n";
+
+				$rm->{$key}->{complete}->{$new_source}->{source} = $new_source;
+				$rm->{$key}->{complete}->{$new_source}->{dest} = $new_dest;
+				$rm->{$key}->{complete}->{$new_source}->{range} = $new_range;
+				
+				$rm->{$key}->{rev_complete}->{$new_dest}->{source} = $new_source;
+				$rm->{$key}->{rev_complete}->{$new_dest}->{dest} = $new_dest;
+				$rm->{$key}->{rev_complete}->{$new_dest}->{range} = $new_range;
+
+				$new_sm->{$new_dest} = $new_range;
+
+			}
+		}
+	}
+
+	find_range_for_map($keys, $new_sm )
 }

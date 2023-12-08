@@ -37,7 +37,7 @@ while ( my $line = <STDIN> ) {
 
 			my $n = $m * $p;
 
-			printf ( "%d %d %d %d %s\n", $p, $m, $n, $d, $n > $d ? "YES" : "" );
+			#printf ( "%d %d %d %d %s\n", $p, $m, $n, $d, $n > $d ? "YES" : "" );
 			if ( $n > $d ) {
 				$count++;
 			}
