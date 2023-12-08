@@ -85,10 +85,14 @@ while ( my $is = shift( @seeds) ) {
 	#print "initial Seed $is range $r\n";
 
 	for ( my $s = $is; $s < $is + $r; $s++ ) {
+
+		print "$s";
 		my $l = $s;
 		foreach my $m ( @transformation_map_list ) {
 			$l = get_lowest_map( $m, $l );
+			print "\t$l";
 		}
+		print "\n";
 		#print "Lowest location for seed $s is $l\n";
 		if ( $lowest_location == -1 or $l < $lowest_location ) {
 			$lowest_location = $l;
