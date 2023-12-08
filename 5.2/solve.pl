@@ -102,41 +102,18 @@ foreach my $key ( keys %$rm ) {
 	}
 }
 
-exit 0;
-
-foreach my $is ( sort { $a <=> $b } keys %$seed_matrix ) {
-	my $r = $seed_matrix->{$is};
-
-	my $last_l = -1;
-	for ( my $s = $is; $s < $is + $r; $s++ ) {
-		## Find the lowest map
-		#my $lowest = $s;
-		#foreach my $k ( @key_list ) {
-		#	$lowest = get_lowest_map( $rm->{$k}->{for}, $lowest );
-		#}
-		#my $highest = $lowest;
-		#foreach my $k ( @rev_key_list ) {
-		#	print "$k $highest ";
-		#	$highest = get_highest_map( $rm->{$k}->{rev}, $highest );
-		#	print " -> $highest\n";
-		#}
-		#print "Seed $s maps to location $lowest, which maps to highest seed $highest\n";
-		##my $l = get_last_in_range( \%seed_to_soil_map, $s );
-		##print "$s $l\n";
-		##if ( $l != $last_l ) {
-		#	#print "Seed $s\n";
-			@quick_seeds = ( @quick_seeds, $s );
-		#	#$last_l = $l;
-		##}
-	}
-}
-
 print "Start as normal\n";
 
-foreach my $s ( @quick_seeds ) {
+my @locations = ( );
+
+foreach my $l ( sort { $a <=> $b } keys %{$rm->{humidity_to_location_map}->{rev}} ) {
+	@locations = ( @locations, $l );
+}
+
+foreach my $s ( @locations ) {
 	my $l = $s;
 	print "$l";
-	foreach my $k ( @key_list ) {
+	foreach my $k ( @rev_key_list ) {
 		$l = get_lowest_map( $rm->{$k}->{for}, $l );
 		print ",$l";
 	}
