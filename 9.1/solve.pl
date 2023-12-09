@@ -31,17 +31,19 @@ sub resolve {
 
 	my @newvector;
 
-	my $vsum;
+	my $allzero = 1;
 
 	my $v;
 	for ( my $i = 1; $i < scalar(@vector); $i++ ) {
 		$v = $vector[$i] - $vector[$i - 1];
-		$vsum += $v;
+		if ( $v ) {
+			$allzero = 0;
+		}
 		@newvector = ( @newvector, $v );
 		
 	}
 
-	if ( $vsum ) {
+	unless ( $allzero ) {
 		my $newvalue = $v + resolve(@newvector);
 		printf( "%s, [%d]\n", join( ", ", @newvector ), $newvalue );
 		return $newvalue;
