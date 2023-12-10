@@ -7,21 +7,13 @@ use warnings;
 
 my $shapes;
 
-#$shapes->{"\|"}->{N}=1; $shapes->{"\|"}->{S}=1; $shapes->{"\|"}->{E}=0; $shapes->{"\|"}->{W}=0; 
 $shapes->{"\|"} = [ 1, 1, 0, 0 ];
-#$shapes->{"\-"}->{N}=0; $shapes->{"\-"}->{S}=0; $shapes->{"\-"}->{E}=1; $shapes->{"\-"}->{W}=1; 
 $shapes->{"\-"} = [ 0, 0, 1, 1 ];
-#$shapes->{"L"}->{N}=1; $shapes->{"L"}->{S}=0; $shapes->{"L"}->{E}=1; $shapes->{"L"}->{W}=0; 
 $shapes->{"L"} = [ 1, 0, 1, 0 ];
-#$shapes->{"J"}->{N}=1; $shapes->{"J"}->{S}=0; $shapes->{"J"}->{E}=0; $shapes->{"J"}->{W}=1; 
 $shapes->{"J"} = [ 1, 0, 0, 1 ];
-#$shapes->{"7"}->{N}=0; $shapes->{"7"}->{S}=1; $shapes->{"7"}->{E}=0; $shapes->{"J"}->{W}=1; 
 $shapes->{"7"} = [ 0, 1, 0, 1 ];
-#$shapes->{"F"}->{N}=0; $shapes->{"F"}->{S}=1; $shapes->{"F"}->{E}=1; $shapes->{"F"}->{W}=0; 
 $shapes->{"F"} = [ 0, 1, 1, 0 ];
-#$shapes->{"\."}->{N}=0; $shapes->{"\."}->{S}=0; $shapes->{"\."}->{E}=0; $shapes->{"\."}->{W}=0; 
 $shapes->{"\."} = [ 0, 0, 0, 0 ];
-#$shapes->{"S"}->{N}=1; $shapes->{"S"}->{S}=1; $shapes->{"S"}->{E}=1; $shapes->{"S"}->{W}=1; 
 $shapes->{"S"} = [ 1, 1, 1, 1 ];
 
 my @compass = ( "North", "South", "East", "West" );
@@ -55,35 +47,20 @@ my $max_x = $j;
 my $max_y = $i;
 print "Size is $max_x, $max_y\n";
 
+my $size = 0;
+
 print "Start is " . join(", ",@start ) . "\n";
 
-my $steps = walk( 0, -1, @start );
+if ( walk( 0, -1, @start ) ) {
+	print "Found the loop it is $size steps long\n";
+}
 
-print "Loop: $steps\n";
+printf( "Answer:  %d\n", $size / 2 );
 
 exit 0;
 
 sub walk {
 	my ( $steps, $from, $x, $y ) = @_;
-
-	my $found;
-
-	if ( $x < 0 ) {
-		print "Hit the west edge of the map\n";
-		return 0;
-	}
-	if ( $x >= $max_x ) {
-		print "Hit the east edge of the map\n";
-		return 0;
-	}
-	if ( $y < 0 ) {
-		print "Hit the north edge of the map\n";
-		return 0;
-	}
-	if ( $y >= $max_y ) {
-		print "Hit the south edge of the map\n";
-		return 0;
-	}
 
 	if ( $steps > 0 ) {
 		print "I've come from the $compass[$from]\n";
@@ -93,6 +70,7 @@ sub walk {
 
 	if ( $s eq "S" and $steps > 0 ) {
 		print "I'm back at the beginning at $steps steps!\n";
+		$size = $steps;
 		return 1;
 	}
 
@@ -139,7 +117,6 @@ sub walk {
 	}
 	if ( $from != 2 && $shapes->{$s}->[2] ) {
 		print "I'm on step $steps, Looking East... ";
-		printf( "I can go East from here to %d, %d\n", $x + 1, $y  );
 
 		if ( $x  + 1 < $max_x ) {
 			my $ns = $map->[$x + 1][$y];
@@ -159,7 +136,6 @@ sub walk {
 	}
 	if ( $from != 3 && $shapes->{$s}->[3] ) {
 		print "I'm on step $steps, Looking West... ";
-		printf( "I can go West from here to %d, %d\n", $x - 1, $y );
 
 		if ( $x  - 1 >= 0 ) {
 			my $ns = $map->[$x - 1][$y];
