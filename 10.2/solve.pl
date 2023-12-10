@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+$| = 1;
 # Let's describe the various shapes
 
 my $shapes;
@@ -172,6 +173,8 @@ sub find_outside {
 
 	my $grid;
 
+	print "Now looking for outside bits\n";
+
 	for ( my $j = 0; $j < $max_x; $j++ ) {
 		for ( my $i = 0; $i < $max_y; $i++ ) {
 			$grid->[$j][$i] = ".";
@@ -252,22 +255,13 @@ OUT4:
 		for ( my $x = 0; $x < $max_x; $x++ ) {
 			for ( my $y = 0; $y < $max_y; $y++ ) {
 				if ( $grid->[$x][$y] eq "." ) {
-					# Not checking if we are off the grid
-					if ( $grid->[$x-1][$y] eq "*" ) {
-						$replacements++;
-						$grid->[$x][$y] = "*";
-					}
-					if ( $grid->[$x+1][$y] eq "*" ) {
-						$replacements++;
-						$grid->[$x][$y] = "*";
-					}
-					if ( $grid->[$x][$y+1] eq "*" ) {
-						$replacements++;
-						$grid->[$x][$y] = "*";
-					}
-					if ( $grid->[$x][$y-1] eq "*" ) {
-						$replacements++;
-						$grid->[$x][$y] = "*";
+					for ( my $ox = -1; $ox <= 1; $ox++ ) {
+						for ( my $oy = -1; $oy <= 1; $oy++ ) {
+							if ( $grid->[$x+$ox][$y+$oy] eq "*" ) {
+								$replacements++;
+								$grid->[$x][$y] = "*";
+							}
+						}
 					}
 				}
 			}
