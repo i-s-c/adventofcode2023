@@ -60,8 +60,8 @@ while ( my $line = <STDIN> ) {
 	$j++;
 }
 
-my $max_x = $j;
-my $max_y = $i;
+my $max_x = $i;
+my $max_y = $j;
 print "Size is $max_x, $max_y\n";
 
 my $size = 0;
@@ -95,7 +95,7 @@ sub walk {
 		return 1;
 	}
 
-	print "I'm at position $x, $y. I've taken $steps steps to get here.  The current shape is " . $map->[$x][$y] . "\n";
+	print "I'm at position $x, $y. I've taken $steps steps to get here.  The current shape is " . $us->{$map->[$x][$y]} . "\n";
 
 	if ( $from != 0 && $shapes->{$s}->[0] ) {
 		print "I'm on step $steps, Looking North... ";
@@ -103,14 +103,14 @@ sub walk {
 		if ( $y  - 1 >= 0 ) {
 			my $ns = $map->[$x][$y-1];
 			if ( $shapes->{$ns}->[1] ) {
-				printf( "A $ns means that I can go North from here to %d, %d\n", $x, $y - 1 );
+				printf( "A $us->{$ns} means that I can go North from here to %d, %d\n", $x, $y - 1 );
 				if ( walk( $steps + 1, 1, $x, $y - 1 ) ) {
 					@pipes = ( [ $x, $y ], @pipes );
 					return 1;
 				}
 			}
 			else {
-				print "but the new shape $ns doesn't connect here\n";
+				print "but the next shape $us->{$ns} doesn't connect here\n";
 			}
 		}
 		else {
@@ -124,14 +124,14 @@ sub walk {
 		if ( $y  + 1 < $max_y ) {
 			my $ns = $map->[$x][$y+1];
 			if ( $shapes->{$ns}->[0] ) {
-				printf( "A $ns means that I can go South from here to %d, %d\n", $x, $y + 1 );
+				printf( "A $us->{$ns} means that I can go South from here to %d, %d\n", $x, $y + 1 );
 				if ( walk( $steps + 1, 0, $x, $y + 1 ) ) {
 					@pipes = ( [ $x, $y ], @pipes );
 					return 1;
 				}
 			}
 			else {
-				print "but the new shape $ns doesn't connect here\n";
+				print "but the next shape $us->{$ns} doesn't connect here\n";
 			}
 		}
 		else {
@@ -144,14 +144,14 @@ sub walk {
 		if ( $x  + 1 < $max_x ) {
 			my $ns = $map->[$x + 1][$y];
 			if ( $shapes->{$ns}->[3] ) {
-				printf( "A $ns means that I can go East from here to %d, %d\n", $x + 1, $y );
+				printf( "A $us->{$ns} means that I can go East from here to %d, %d\n", $x + 1, $y );
 				if ( walk( $steps + 1, 3, $x + 1, $y ) ) {
 					@pipes = ( [ $x, $y ], @pipes );
 					return 1;
 				}
 			}
 			else {
-				print "but the new shape $ns doesn't connect here\n";
+				print "but the next shape $us->{$ns} doesn't connect here\n";
 			}
 		}
 		else {
@@ -164,14 +164,14 @@ sub walk {
 		if ( $x  - 1 >= 0 ) {
 			my $ns = $map->[$x - 1][$y];
 			if ( $shapes->{$ns}->[2] ) {
-				printf( "A $ns means that I can go East from here to %d, %d\n", $x - 1, $y );
+				printf( "A $us->{$ns} means that I can go East from here to %d, %d\n", $x - 1, $y );
 				if ( walk( $steps + 1, 2, $x - 1, $y ) ) {
 					@pipes = ( [ $x, $y ], @pipes );
 					return 1;
 				}
 			}
 			else {
-				print "but the new shape $ns doesn't connect here\n";
+				print "but the next shape $us->{$ns} doesn't connect here\n";
 			}
 		}
 		else {
@@ -189,9 +189,9 @@ sub find_outside {
 
 	print "Now looking for outside bits\n";
 
-	for ( my $j = 0; $j < $max_x; $j++ ) {
-		for ( my $i = 0; $i < $max_y; $i++ ) {
-			$grid->[$j][$i] = ".";
+	for ( my $x = 0; $x < $max_x; $x++ ) {
+		for ( my $y = 0; $y < $max_y; $y++ ) {
+			$grid->[$x][$y] = ".";
 		}
 	}
 
@@ -244,7 +244,7 @@ sub find_outside {
 	# Edge 4. South to North
 
 	for ( my $x = 0; $x < $max_x; $x++ ) {
-		for ( my $y = $max_y - 1; $y >= $0; $y-- ) {
+		for ( my $y = $max_y - 1; $y >= 0; $y-- ) {
 			if ( $grid->[$x][$y] eq " " ) {
 				last;
 			}
@@ -281,17 +281,17 @@ sub find_outside {
 	
 
 	my $insides = 0;
-	for ( my $j = 0; $j < $max_x; $j++ ) {
-		for ( my $i = 0; $i < $max_y; $i++ ) {
-			#printf( "%s", $grid->[$i][$j]);
-			if ( $grid->[$i][$j] eq "." ) {
+	for ( my $y = 0; $y < $max_y; $y++ ) {
+		for ( my $x = 0; $x < $max_x; $x++ ) {
+			#printf( "%s", $grid->[$x][$y]);
+			if ( $grid->[$x][$y] eq "." ) {
 				$insides++;
 			}
-			if ( $grid->[$i][$j] eq " " ) {
-				printf( "%s", $us->{ $map->[$i][$j]});
+			if ( $grid->[$x][$y] eq " " ) {
+				printf( "%s", $us->{ $map->[$x][$y]});
 			}
 			else {
-				printf( "%s", $us->{$grid->[$i][$j]});
+				printf( "%s", $us->{$grid->[$x][$y]});
 			}
 		}
 		print "\n";
