@@ -58,7 +58,7 @@ if ( walk( 0, -1, @start ) ) {
 
 	printf( "The are %d sections in the pipe\n", scalar(@pipes));
 
-	draw_pipe( @pipes );
+	find_outside( @pipes );
 }
 
 printf( "Answer:  %d\n", $size / 2 );
@@ -167,7 +167,7 @@ sub walk {
 	return 0;
 }
 
-sub draw_pipe {
+sub find_outside {
 	my ( @pipe ) = @_;
 
 	my $grid;
@@ -180,14 +180,113 @@ sub draw_pipe {
 
 	foreach my $p ( @pipes ) {
 		#printf( "%d,%d\n", $p->[0], $p->[1] );
-		$grid->[$p->[0]][$p->[1]] = '*';
+		$grid->[$p->[0]][$p->[1]] = ' ';
 	}
 
+	# Outside must be from the edges in. So there are four moves: down the west edge, going east until you hit a pipe, then stopping.
+
+	# Edge 1. West to East
+
+	for ( my $y = 0; $y < $max_y; $y++ ) {
+		for ( my $x = 0; $x < $max_x; $x++ ) {
+			if ( $grid->[$x][$y] eq " " ) {
+				goto OUT1;
+			}
+			else {
+				$grid->[$x][$y] = "*";
+			}
+		}
+OUT1:
+	}
+
+	# Edge 2. East to West
+
+	for ( my $y = 0; $y < $max_y; $y++ ) {
+		for ( my $x = $max_x - 1; $x >= 0; $x-- ) {
+			if ( $grid->[$x][$y] eq " " ) {
+				goto OUT2;
+			}
+			else {
+				$grid->[$x][$y] = "*";
+			}
+		}
+OUT2:
+	}
+
+	# Edge 3. North to South
+
+	for ( my $x = 0; $x < $max_x; $x++ ) {
+		for ( my $y = 0; $y < $max_y; $y++ ) {
+			if ( $grid->[$x][$y] eq " " ) {
+				goto OUT3;
+			}
+			else {
+				$grid->[$x][$y] = "*";
+			}
+		}
+OUT3:
+	}
+	
+	# Edge 4. South to North
+
+	for ( my $x = 0; $x < $max_x; $x++ ) {
+		for ( my $y = $max_y - 1; $y >= $0; $y-- ) {
+			if ( $grid->[$x][$y] eq " " ) {
+				goto OUT4;
+			}
+			else {
+				$grid->[$x][$y] = "*";
+			}
+		}
+OUT4:
+	}
+
+	# OK, now we need to find the "corner" cases.  So check every inside to see if it is adjacent to an inside. We'll have to repeat this until there aren't anymore.
+	# Let's see if we can get away with only checking N, S, E, W (i.e. not the diagonals ).
+
+
+	my $replacements;
+	do {
+		$replacements = 0;
+
+		for ( my $x = 0; $x < $max_x; $x++ ) {
+			for ( my $y = 0; $y < $max_y; $y++ ) {
+				if ( $grid->[$x][$y] eq "." ) {
+					# Not checking if we are off the grid
+					if ( $grid->[$x-1][$y] eq "*" ) {
+						$replacements++;
+						$grid->[$x][$y] = "*";
+					}
+					if ( $grid->[$x+1][$y] eq "*" ) {
+						$replacements++;
+						$grid->[$x][$y] = "*";
+					}
+					if ( $grid->[$x][$y+1] eq "*" ) {
+						$replacements++;
+						$grid->[$x][$y] = "*";
+					}
+					if ( $grid->[$x][$y-1] eq "*" ) {
+						$replacements++;
+						$grid->[$x][$y] = "*";
+					}
+				}
+			}
+		}
+
+	} while ( $replacements );
+	
+
+	my $insides = 0;
 	for ( my $j = 0; $j < $max_x; $j++ ) {
 		for ( my $i = 0; $i < $max_y; $i++ ) {
 			printf( "%s", $grid->[$i][$j]);
+			if ( $grid->[$i][$j] eq "." ) {
+				$insides++;
+			}
 		}
 		print "\n";
 	}
 
+	print "There are $insides inside\n";
 }
+
