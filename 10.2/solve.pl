@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+binmode(STDOUT,":utf8" );
+
 $| = 1;
 # Let's describe the various shapes
 
@@ -16,6 +18,18 @@ $shapes->{"7"} = [ 0, 1, 0, 1 ];
 $shapes->{"F"} = [ 0, 1, 1, 0 ];
 $shapes->{"\."} = [ 0, 0, 0, 0 ];
 $shapes->{"S"} = [ 1, 1, 1, 1 ];
+
+my $us;
+$us->{"\|"} = "\x{2503}";
+$us->{"\-"} = "\x{2501}";
+$us->{"L"} = "\x{2517}";
+$us->{"J"} ="\x{251B}";
+$us->{"7"} = "\x{2513}";
+$us->{"F"} = "\x{250F}";
+$us->{"\."} = "\x{2588}";
+$us->{"S"} = "\x{2573}";
+$us->{"\*"} = " ";
+
 
 my @compass = ( "North", "South", "East", "West" );
 
@@ -269,15 +283,15 @@ sub find_outside {
 	my $insides = 0;
 	for ( my $j = 0; $j < $max_x; $j++ ) {
 		for ( my $i = 0; $i < $max_y; $i++ ) {
-			printf( "%s", $grid->[$i][$j]);
+			#printf( "%s", $grid->[$i][$j]);
 			if ( $grid->[$i][$j] eq "." ) {
 				$insides++;
 			}
 			if ( $grid->[$i][$j] eq " " ) {
-				printf( "%s", $map->[$i][$j]);
+				printf( "%s", $us->{ $map->[$i][$j]});
 			}
 			else {
-				printf( "%s", $grid->[$i][$j]);
+				printf( "%s", $us->{$grid->[$i][$j]});
 			}
 		}
 		print "\n";
