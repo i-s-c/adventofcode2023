@@ -193,13 +193,12 @@ sub find_outside {
 	for ( my $y = 0; $y < $max_y; $y++ ) {
 		for ( my $x = 0; $x < $max_x; $x++ ) {
 			if ( $grid->[$x][$y] eq " " ) {
-				goto OUT1;
+				last;
 			}
 			else {
 				$grid->[$x][$y] = "*";
 			}
 		}
-OUT1:
 	}
 
 	# Edge 2. East to West
@@ -207,13 +206,12 @@ OUT1:
 	for ( my $y = 0; $y < $max_y; $y++ ) {
 		for ( my $x = $max_x - 1; $x >= 0; $x-- ) {
 			if ( $grid->[$x][$y] eq " " ) {
-				goto OUT2;
+				last;
 			}
 			else {
 				$grid->[$x][$y] = "*";
 			}
 		}
-OUT2:
 	}
 
 	# Edge 3. North to South
@@ -221,13 +219,12 @@ OUT2:
 	for ( my $x = 0; $x < $max_x; $x++ ) {
 		for ( my $y = 0; $y < $max_y; $y++ ) {
 			if ( $grid->[$x][$y] eq " " ) {
-				goto OUT3;
+				last;
 			}
 			else {
 				$grid->[$x][$y] = "*";
 			}
 		}
-OUT3:
 	}
 	
 	# Edge 4. South to North
@@ -235,13 +232,12 @@ OUT3:
 	for ( my $x = 0; $x < $max_x; $x++ ) {
 		for ( my $y = $max_y - 1; $y >= $0; $y-- ) {
 			if ( $grid->[$x][$y] eq " " ) {
-				goto OUT4;
+				last;
 			}
 			else {
 				$grid->[$x][$y] = "*";
 			}
 		}
-OUT4:
 	}
 
 	# OK, now we need to find the "corner" cases.  So check every inside to see if it is adjacent to an inside. We'll have to repeat this until there aren't anymore.
