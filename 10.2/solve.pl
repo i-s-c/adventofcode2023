@@ -273,6 +273,12 @@ sub find_outside {
 			if ( $grid->[$i][$j] eq "." ) {
 				$insides++;
 			}
+			if ( $grid->[$i][$j] eq " " ) {
+				printf( "%s", $map->[$i][$j]);
+			}
+			else {
+				printf( "%s", $grid->[$i][$j]);
+			}
 		}
 		print "\n";
 	}
