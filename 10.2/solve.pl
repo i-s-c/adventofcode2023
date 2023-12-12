@@ -300,3 +300,18 @@ sub find_outside {
 	print "There are $insides inside\n";
 }
 
+
+# Now we need to find edges.  Each cell can be divided into four quadrants. Each quadrant will be inside or outside.
+# So we can represent inside as 1, outside as 0
+# So our 4 bits can map nicely to a single number for each cell
+#
+# 1 0
+# 3 2
+# 
+# We just need to find an edge. Doesn't need to be the starting point, and work our way round.  Probably easiest to find a straight edge (north to south) as it's unambiguous.
+# Then inside tiles are when adjacent halves are all inside. Once we've gone round the pipe, we can then find the inside adjacent pieces. And so on.
+
+
+
+
+
